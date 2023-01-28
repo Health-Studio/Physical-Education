@@ -1,5 +1,5 @@
 {
-  "name": "Physical-Education",
+  "name": "physical-education",
   "version": "1.0.0",
   "description": "Health Studio for Physical Education",
   "main": "src/app.ts",
