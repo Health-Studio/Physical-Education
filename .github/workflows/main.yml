@@ -38,5 +38,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           service-id: ${{ secrets.RENDER_SERVICE_ID }}
           retries: 3
-          wait: 2000
-          sleep: 2000
+          wait: 16000
+          sleep: 30000
