@@ -15,6 +15,8 @@ const config: Config = {
     "@test/(.*)": "<rootDir>/test/$1",
   },
   setupFilesAfterEnv: ["<rootDir>/test/jest.setup.ts"],
+  collectCoverage: true,
+  coverageReporters: ["text", "cobertura"],
 };
 
 export default config;

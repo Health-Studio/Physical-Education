@@ -12,7 +12,9 @@ const config: Config = {
     moduleNameMapper: {
         "@src/(.*)": "<rootDir>/src/$1",
         "@test/(.*)": "<rootDir>/test/$1"
-    }
+    },
+    collectCoverage: true,
+    coverageReporters: ["text", "cobertura"]
 }
 
 export default config;
