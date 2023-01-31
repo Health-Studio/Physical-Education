@@ -2,11 +2,10 @@ import type { Config } from "jest";
 import { resolve } from "path";
 
 const root = resolve(__dirname, "..");
-
 const config: Config = {
   rootDir: root,
-  displayName: "e2e tests",
-  testMatch: ["<rootDir>/test/**/*.test.ts"],
+  displayName: "unit tests",
+  testMatch: ["<rootDir>/src/**/*.test.ts"],
   testEnvironment: "node",
   preset: "ts-jest",
   clearMocks: true,
@@ -14,7 +13,6 @@ const config: Config = {
     "@src/(.*)": "<rootDir>/src/$1",
     "@test/(.*)": "<rootDir>/test/$1",
   },
-  setupFilesAfterEnv: ["<rootDir>/test/jest.setup.ts"],
 };
 
 export default config;
