@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import * as http from "http";
 
 export class Server extends Overnight {
-  private server?: http.Server
+  private server?: http.Server;
 
   constructor(private host = "localhost", private port = "8080") {
     super();
@@ -23,17 +23,22 @@ export class Server extends Overnight {
     });
   }
 
-  private listen(): void{
+  private listen(): void {
     this.server = this.app.listen(this.port, () => {
-      console.log(`⚡️[server]: Server is running at http://${this.host}:${this.port}`);
-    })
+      console.log(
+        `⚡️[server]: Server is running at http://${this.host}:${this.port}`
+      );
+    });
   }
 
   public async close(): Promise<void> {
-    if(this.server){
+    if (this.server) {
       await new Promise((resolve, reject) => {
-        this.server?.close((err) => { if(err) return reject(err); resolve(true)})
-      })
+        this.server?.close((err) => {
+          if (err) return reject(err);
+          resolve(true);
+        });
+      });
     }
   }
 
