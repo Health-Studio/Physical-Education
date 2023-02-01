@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Educator {
+  id       String    @id @default(uuid())
+  name     String
+  cref     String    @unique
+  pacients Pacient[]
+}
+
+model Pacient {
+  id             String          @id @default(uuid())
+  name           String
+  cpf            String          @unique
+  height         Float
+  weight         Float
+  educators      Educator[]
+  circumferences Circumference[]
+  skinfolds      SkinFold[]
+}
+
+enum CircumferenceType {
+  ARM
+  CHEST
+  WAIST
+  ABDOMEN
+  GLUTEUS
+  THIGH
+  CALF
+}
+
+model Circumference {
+  id        String            @id @default(uuid())
+  type      CircumferenceType
+  pacient   Pacient           @relation(fields: [pacientId], references: [id])
+  pacientId String
+  measure   Float
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+enum SkinFoldType {
+  CHEST
+  ABDOMEN
+  THIGH
+}
+
+model SkinFold {
+  id        String            @id @default(uuid())
+  type      CircumferenceType
+  pacient   Pacient           @relation(fields: [pacientId], references: [id])
+  pacientId String
+  measure   Float
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
