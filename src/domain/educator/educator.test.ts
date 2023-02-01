@@ -1,31 +1,52 @@
+import NotificationError from "../commons/notification/notification.error";
 import * as CREF from "./cref";
-import Educator from "./educator";
+import { Educator, Factory } from "./educator";
 
-const Mock_CREF_Validator = (): CREF.Validator => {
+const validator = (): CREF.Validator => {
   return {
     valid: jest.fn(),
   };
 };
 
-describe("Educator testing", () => {
+describe("Domain educator: Educator behaivors and functions", () => {
   it("should create a new educator", async () => {
-    const crefValidator = Mock_CREF_Validator();
+    const crefValidator = validator();
     crefValidator.valid = jest.fn().mockResolvedValue(true);
-    const factory = new Educator.Factory(crefValidator);
+    const factory = new Factory(crefValidator);
 
-    const educator = await factory.build("Diego", "209202011", []);
-    expect(educator.name).toBe("Diego");
-    expect(educator.cref).toBe("209202011");
-    expect(educator.pacients).toStrictEqual([]);
+    const educator: Educator = await factory.build("Diego", "20920201122", []);
+    expect(educator.Name).toBe("Diego");
+    expect(educator.CREF).toBe("20920201122");
+    expect(educator.Pacients).toStrictEqual([]);
+  });
+
+  it("shouldnt create a new educator when name lenght is invalid", async () => {
+    const crefValidator = validator();
+    crefValidator.valid = jest.fn().mockResolvedValue(true);
+    const factory = new Factory(crefValidator);
+
+    expect(() => factory.build("Di", "20920201122", [])).rejects.toThrow(
+      NotificationError
+    );
+  });
+
+  it("shouldnt create a new educator when CREF lenght is invalid", async () => {
+    const crefValidator = validator();
+    crefValidator.valid = jest.fn().mockResolvedValue(true);
+    const factory = new Factory(crefValidator);
+
+    expect(() => factory.build("Diego", "209202011", [])).rejects.toThrow(
+      NotificationError
+    );
   });
 
   it("shouldnt create a new educator when CREF is invalid", async () => {
-    const crefValidator = Mock_CREF_Validator();
+    const crefValidator = validator();
     crefValidator.valid = jest.fn().mockResolvedValue(false);
-    const factory = new Educator.Factory(crefValidator);
+    const factory = new Factory(crefValidator);
 
-    expect(() => factory.build("Diego", "209202011", [])).rejects.toThrowError(
-      ""
+    expect(() => factory.build("Diego", "209202011", [])).rejects.toThrow(
+      NotificationError
     );
   });
 });

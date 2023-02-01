@@ -1,50 +1,99 @@
-export abstract class Pacient {
-  protected _id: string;
-  protected _cpf: string;
-  protected _name: string;
-  protected _birthday: Date;
-  protected _height: number;
-  protected _weight: number;
+import Entity from "../commons/entity/entity.abstract";
+import NotificationError from "../commons/notification/notification.error";
+
+export class Pacient extends Entity {
+  protected cpf: string;
+  protected name: string;
+  protected birthday: Date;
+  protected height: number;
+  protected weight: number;
+
+  private validate(): void {
+    this.cpf = this.cpf.replaceAll("-", "");
+    this.cpf = this.cpf.replaceAll(".", "");
+    if (this.cpf.length != 11) {
+      this.Notification.addError({
+        context: "cpf",
+        message: "CPF lenght must be 11 digits",
+      });
+    }
+
+    this.name = this.name.replace(" ", "");
+    if (this.name.length < 3 || this.name.length > 50) {
+      this.Notification.addError({
+        context: "name",
+        message: "Name lenght must be in range (3, 50)",
+      });
+    }
+
+    if (this.birthday.getTime() >= new Date().getTime()) {
+      this.Notification.addError({
+        context: "birthday",
+        message: "Birthday must be less than today",
+      });
+    }
+
+    if (this.height < 120 || this.height >= 250) {
+      this.Notification.addError({
+        context: "height",
+        message: "Height must be in range (120cm, 250cm)",
+      });
+    }
+
+    if (this.weight < 10 || this.weight >= 240) {
+      this.Notification.addError({
+        context: "weight",
+        message: "Weight must be in range (10kg, 240kg)",
+      });
+    }
+
+    if (this.Notification.hasErrors()) {
+      throw new NotificationError(this.Notification.Errors);
+    }
+  }
 
   constructor(
-    id: string,
     cpf: string,
     name: string,
     birthday: Date,
     height: number,
-    weight: number
+    weight: number,
+    id?: string
   ) {
-    this._id = id;
-    this._cpf = cpf;
-    this._name = name;
-    this._birthday = birthday;
-    this._height = height;
-    this._weight = weight;
+    super(id);
+    this.cpf = cpf;
+    this.name = name;
+    this.birthday = birthday;
+    this.height = height;
+    this.weight = weight;
+    this.validate();
   }
 
-  public abstract imc(): number;
-  public abstract lmi(): number;
+  public imc(): number {
+    return Math.floor(this.weight / (this.height / 100) ** 2 * 100) / 100;
+  }
+
   public age(): number {
-    return new Date().getFullYear() - this._birthday.getFullYear();
+    return new Date().getFullYear() - this.birthday.getFullYear();
   }
 
-  public get id() {
-    return this._id;
+  get Id() {
+    return this.id;
   }
 
-  public get name() {
-    return this._name;
+  get Name() {
+    return this.name;
   }
 
-  public get cpf() {
-    return this._cpf;
+  get CPF() {
+    return this.cpf;
   }
 
-  public get height() {
-    return this._height;
+  get Height() {
+    return this.height;
   }
 
-  public get weight() {
-    return this._weight;
+  get Weight() {
+    return this.weight;
   }
 }

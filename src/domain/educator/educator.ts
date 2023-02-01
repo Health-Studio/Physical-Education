@@ -1,59 +1,93 @@
-import { v4 as uuid } from "uuid";
 import * as CREF from "./cref";
 import { Pacient } from "./pacient";
+import Entity from "../commons/entity/entity.abstract";
+import NotificationError from "../commons/notification/notification.error";
 
 type Id = string;
 type Name = string;
 type CREF = CREF.CREF;
-type Pacients = Array<Pacient>;
+type Pacients = Pacient[];
 
-export default class Educator {
-  private _id: Id;
-  private _name: Name;
-  private _cref: CREF;
-  private _pacients: Pacients;
+export interface Repository {
+  create(educator: Educator): Promise<void>;
+  findById(id: Id): Promise<Educator | null>;
+  findByCREF(cref: CREF): Promise<Educator | null>;
+  update(educator: Educator): Promise<void>;
+}
 
-  private constructor(name: Name, cref: CREF, pacients: Pacients, id?: Id) {
-    if (id) this._id = id;
-    else this._id = uuid();
-    this._name = name;
-    this._cref = cref;
-    this._pacients = pacients;
-  }
+export class Educator extends Entity {
+  private name: Name;
+  private cref: CREF;
+  private pacients: Pacients;
 
-  static Factory = class {
-    private validator: CREF.Validator;
-
-    constructor(validator: CREF.Validator) {
-      this.validator = validator;
+  private validate(): void {
+    if (this.name.length < 3 || this.name.length > 50) {
+      this.Notification.addError({
+        context: "name",
+        message: "Name lenght must be in range (3, 50)",
+      });
     }
 
-    public async build(
-      name: Name,
-      cref: CREF,
-      pacients: Pacients
-    ): Promise<Educator> {
-      const isValid = await this.validator.valid(name, cref);
-      if (isValid) {
-        return new Educator(name, cref, pacients);
-      }
-      throw new Error("");
+    this.cref.replace(" ", "");
+    if (
+      this.cref.length == 0 ||
+      this.cref.length < 10 ||
+      this.cref.length >= 20
+    ) {
+      this.Notification.addError({
+        context: "cref",
+        message: "CREF lenght must be in range (10, 20)",
+      });
     }
-  };
 
-  public get id(): Id {
-    return this._id;
+    if (this.Notification.hasErrors()) {
+      throw new NotificationError(this.Notification.Errors);
+    }
   }
 
-  public get name(): Name {
-    return this._name;
+  constructor(name: Name, cref: CREF, pacients: Pacients, id?: string) {
+    super(id);
+    this.name = name;
+    this.cref = cref;
+    this.pacients = pacients;
+    this.validate();
   }
 
-  public get cref(): CREF {
-    return this._cref;
+  get Name(): Name {
+    return this.name;
   }
 
-  public get pacients(): Pacients {
-    return this._pacients;
+  get CREF(): CREF {
+    return this.cref;
+  }
+
+  get Pacients(): Pacients {
+    return this.pacients;
+  }
+}
+
+export class Factory {
+  private validator: CREF.Validator;
+
+  constructor(validator: CREF.Validator) {
+    this.validator = validator;
+  }
+
+  public async build(
+    name: Name,
+    cref: CREF,
+    pacients: Pacients
+  ): Promise<Educator> {
+    const educator = new Educator(name, cref, pacients);
+    const crefIsValid = await this.validator.valid(
+      educator.Name,
+      educator.CREF
+    );
+    if (!crefIsValid) {
+      throw new NotificationError([
+        { context: "educator", message: "CREF is invalid" },
+      ]);
+    }
+    return educator;
   }
 }
