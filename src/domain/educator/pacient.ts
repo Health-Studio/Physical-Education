@@ -70,7 +70,7 @@ export class Pacient extends Entity {
   }
 
   public imc(): number {
-    return Math.floor(this.weight / (this.height / 100) ** 2 * 100) / 100;
+    return Math.floor((this.weight / (this.height / 100) ** 2) * 100) / 100;
   }
 
   public age(): number {
