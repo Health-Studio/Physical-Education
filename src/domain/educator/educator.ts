@@ -64,6 +64,11 @@ export class Educator extends Entity {
   get Pacients(): Pacients {
     return this.pacients;
   }
+
+  public add(pacient: Pacient): void {
+    const added = this.pacients.filter((p) => p.Id == pacient.Id).length != 0;
+    if (!added) this.pacients.push(pacient);
+  }
 }
 
 export class Factory {
