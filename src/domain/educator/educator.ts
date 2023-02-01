@@ -24,7 +24,7 @@ export class Educator extends Entity {
     if (this.name.length < 3 || this.name.length > 50) {
       this.Notification.addError({
         context: "name",
-        message: "Name lenght must be in range (3, 50)",
+        message: "lenght must be greater than 3 and less than 50",
       });
     }
 
@@ -36,7 +36,7 @@ export class Educator extends Entity {
     ) {
       this.Notification.addError({
         context: "cref",
-        message: "CREF lenght must be in range (10, 20)",
+        message: "lenght must be greater than 10 and less than 20",
       });
     }
 

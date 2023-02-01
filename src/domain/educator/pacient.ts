@@ -14,36 +14,36 @@ export class Pacient extends Entity {
     if (this.cpf.length != 11) {
       this.Notification.addError({
         context: "cpf",
-        message: "CPF lenght must be 11 digits",
+        message: "value must be contains 11 digits",
       });
     }
 
-    this.name = this.name.replace(" ", "");
+    this.name = this.name.replaceAll(" ", "");
     if (this.name.length < 3 || this.name.length > 50) {
       this.Notification.addError({
         context: "name",
-        message: "Name lenght must be in range (3, 50)",
+        message: "lenght must be greater than 3 and less than 50",
       });
     }
 
     if (this.birthday.getTime() >= new Date().getTime()) {
       this.Notification.addError({
         context: "birthday",
-        message: "Birthday must be less than today",
+        message: "must be before today",
       });
     }
 
     if (this.height < 120 || this.height >= 250) {
       this.Notification.addError({
         context: "height",
-        message: "Height must be in range (120cm, 250cm)",
+        message: "value must be greaten than 120cm and less than 250cm",
       });
     }
 
     if (this.weight < 10 || this.weight >= 240) {
       this.Notification.addError({
         context: "weight",
-        message: "Weight must be in range (10kg, 240kg)",
+        message: "value must be greater than 10kg and less than 240kg",
       });
     }
 
