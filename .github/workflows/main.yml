@@ -9,10 +9,67 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js ${{ matrix.node.version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node.version }}
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+  test:
+    if: ${{ success() }}
+    needs: build
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [18.x]
+
+    services:
+      postgres:
+        image: postgres:15
+
+      env:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+      options: >-
+        --health-cmd pg_isready
+        --health-interval 10s
+        --health-timeout 5s
+        --health-retries 5
+      ports:
+        - 5432:5432
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/physical-education-api
 
     steps:
       - uses: actions/checkout@v3
@@ -25,7 +82,10 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
-      - name: Run tests
+      - name: Run database migrations
+        run: yarn db:migrations
+
+      - name: Test
         run: yarn test
 
       - name: Upload coverage to codecov
