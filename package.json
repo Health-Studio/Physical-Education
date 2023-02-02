@@ -19,7 +19,7 @@
     "build": "tsc",
     "start": "node ./dist/src/app.js",
     "deploy": "yarn install && yarn db:migrations && yarn build",
-    "start:dev": "ts-node -r tsconfig-paths/register ./src/app.ts"
+    "start:dev": "LOG=true ts-node -r tsconfig-paths/register ./src/app.ts"
   },
   "dependencies": {
     "@overnightjs/core": "^1.7.6",
