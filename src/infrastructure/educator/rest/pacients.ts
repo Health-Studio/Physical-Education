@@ -33,6 +33,7 @@ export default class PacientsController {
       response.status(httpStatusCodes.CREATED).send(pacient);
     } catch (error) {
       if (error instanceof ApplicationError) {
+        logger.error(error);
         logger.error(`Error on register pacient name: ${request.body.name}`);
         response
           .status(httpStatusCodes.BAD_REQUEST)

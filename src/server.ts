@@ -18,7 +18,9 @@ export default class Server extends Overnight {
   constructor(private host = "localhost", private port = "8080") {
     super();
     this.port = port;
-    this.database = new PrismaClient();
+    this.database = new PrismaClient({
+      log: ["query", "info", "warn", "error"],
+    });
   }
 
   public async init(): Promise<void> {

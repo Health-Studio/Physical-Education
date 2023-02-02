@@ -22,10 +22,13 @@ export default class EducatorsController {
       const body = request.body;
       const input: Params = { name: body.name, cref: body.cref };
       const educator = await this.createEducator.execute(input);
-      logger.info(`Success on create educator name: ${body.name}`);
+      logger.info(
+        `Success on create educator name: ${body.name} id: ${educator.id}`
+      );
       response.status(httpStatusCodes.CREATED).send(educator);
     } catch (error) {
       if (error instanceof ApplicationError) {
+        logger.error(error);
         logger.error(`Error on create educator name: ${request.body.name}`);
         response
           .status(httpStatusCodes.BAD_REQUEST)
