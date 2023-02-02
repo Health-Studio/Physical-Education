@@ -26,7 +26,7 @@ export class Pacient extends Entity {
       });
     }
 
-    if (this.birthday.getTime() >= new Date().getTime()) {
+    if (this.birthday.getFullYear() > new Date().getFullYear() - 10) {
       this.Notification.addError({
         context: "birthday",
         message: "must be before today",
