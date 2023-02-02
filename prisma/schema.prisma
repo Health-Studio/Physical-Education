@@ -23,6 +23,7 @@ model Pacient {
   cpf            String          @unique
   height         Float
   weight         Float
+  birthday       DateTime
   educators      Educator[]
   circumferences Circumference[]
   skinfolds      SkinFold[]
