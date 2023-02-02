@@ -12,7 +12,7 @@ export interface Params {
   birthday: Date;
 }
 
-export interface AttendedPacient {
+export interface RegisteredPacient {
   id: string;
   name: string;
   height: number;
@@ -28,7 +28,7 @@ export default class RegisterPacient {
     this.repository = repository;
   }
 
-  public async execute(params: Params): Promise<AttendedPacient> {
+  public async execute(params: Params): Promise<RegisteredPacient> {
     try {
       const educator = await this.repository.findById(params.educatorId);
       if (educator === null) throw new Error("educator not found");
