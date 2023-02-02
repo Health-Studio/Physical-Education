@@ -58,7 +58,7 @@ export default class RegisterPacient {
     } catch (error) {
       if (error instanceof NotificationError)
         throw ApplicationError.fromNotification(error);
-      throw ApplicationError.fromError(error as Error);
+      throw ApplicationError.fromError("register pacient", error as Error);
     }
   }
 }

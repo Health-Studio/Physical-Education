@@ -40,7 +40,7 @@ export class CreateEducator {
     } catch (error) {
       if (error instanceof NotificationError)
         throw ApplicationError.fromNotification(error);
-      throw ApplicationError.fromError(error as Error);
+      throw ApplicationError.fromError("create educator", error as Error);
     }
   }
 }

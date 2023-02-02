@@ -23,22 +23,22 @@ export default class EducatorsController {
       const input: Params = { name: body.name, cref: body.cref };
       const educator = await this.createEducator.execute(input);
       logger.info(
-        `Success on create educator name: ${body.name} id: ${educator.id}`
+        `Success on create educator name: "${body.name}" id: "${educator.id}"`
       );
       response.status(httpStatusCodes.CREATED).send(educator);
-    } catch (error) {
-      if (error instanceof ApplicationError) {
-        logger.error(error);
-        logger.error(`Error on create educator name: ${request.body.name}`);
-        response
-          .status(httpStatusCodes.BAD_REQUEST)
-          .send({ errors: error.errors });
-        return;
-      }
-      logger.error(
-        `Unexpected error on create educator name: ${request.body.name} `
+    } catch (err) {
+      const error = err as ApplicationError;
+      error.Errors.forEach((e) =>
+        e.messages.forEach((message) =>
+          logger.error(
+            `Error on create educator name: "${request.body.name}" context: "${e.context}" reason: "${message}"`
+          )
+        )
       );
-      response.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send();
+      response
+        .status(httpStatusCodes.BAD_REQUEST)
+        .send({ errors: error.Errors });
+      return;
     }
   }
 }

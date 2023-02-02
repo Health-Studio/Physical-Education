@@ -18,9 +18,10 @@ export default class PacientsController {
   @Post(":educator")
   public async create(request: Request, response: Response) {
     try {
+      const educatorId = request.params.educator;
       const body = request.body;
       const input: Params = {
-        educatorId: request.params.educator,
+        educatorId: educatorId,
         name: body.name,
         cpf: body.cpf,
         height: body.height,
@@ -29,21 +30,23 @@ export default class PacientsController {
       };
 
       const pacient = await this.registerPacient.execute(input);
-      logger.info(`Success on register pacient name: ${body.name}`);
-      response.status(httpStatusCodes.CREATED).send(pacient);
-    } catch (error) {
-      if (error instanceof ApplicationError) {
-        logger.error(error);
-        logger.error(`Error on register pacient name: ${request.body.name}`);
-        response
-          .status(httpStatusCodes.BAD_REQUEST)
-          .send({ errors: error.errors });
-        return;
-      }
-      logger.error(
-        `Unexpected error on register pacient name: ${request.body.name}`
+      logger.info(
+        `Success on register pacient name: "${body.name}" educator: "${educatorId}"`
       );
-      response.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send();
+      response.status(httpStatusCodes.CREATED).send(pacient);
+    } catch (err) {
+      const error = err as ApplicationError;
+      error.Errors.forEach((e) =>
+        e.messages.forEach((message) => {
+          logger.error(
+            `Error on register pacient name: "${request.body.name}" context: "${e.context}" reason: "${message}"`
+          );
+        })
+      );
+      response
+        .status(httpStatusCodes.BAD_REQUEST)
+        .send({ errors: error.Errors });
+      return;
     }
   }
 }

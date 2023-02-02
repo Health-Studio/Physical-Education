@@ -1,37 +1,12 @@
 import NotificationError from "@src/domain/commons/notification/notification.error";
 
+type AppError = { context: string; messages: string[] };
+
 export class ApplicationError extends Error {
-  private static withErrors(
-    message: string,
-    errors: { context: string; errors: string[] }[]
-  ): string {
-    const messages = errors.map(
-      (m) => `:\n${m.context}:\n${m.errors.map((e) => `\t${e}\n`)}`
-    );
-
-    return (
-      message +
-      (messages.length == 0 ? "" : messages.reduce((v, acc) => acc + v))
-    );
-  }
-
-  private static withError(message: string, error: string): string {
-    return `${message}:\n\t${error}`;
-  }
-
-  public constructor(
-    public message: string,
-    public errors: { context: string; errors: string[] }[],
-    public error: string
-  ) {
-    super(
-      errors.length == 0
-        ? ApplicationError.withError(message, error)
-        : ApplicationError.withErrors(message, errors)
-    );
-
-    this.name = this.constructor.name;
-    Error.captureStackTrace(this, this.constructor);
+  constructor(protected layer: string, protected errors: AppError[]) {
+    super(layer);
+    this.layer = layer;
+    this.errors = errors;
   }
 
   public static fromNotification(
@@ -39,13 +14,18 @@ export class ApplicationError extends Error {
   ): ApplicationError {
     const errors = notification.errors.map((e) => ({
       context: e.context,
-      errors: e.message.split(","),
+      messages: e.message.split(","),
     }));
 
-    return new ApplicationError("Domain Error(s)", errors, "");
+    return new ApplicationError("domain", errors);
   }
 
-  public static fromError(error: Error): ApplicationError {
-    return new ApplicationError("Application Error", [], error.message);
+  public static fromError(context: string, error: Error): ApplicationError {
+    const errors = [{ context, messages: [error.message] }];
+    return new ApplicationError("application", errors);
+  }
+
+  public get Errors() {
+    return this.errors;
   }
 }
