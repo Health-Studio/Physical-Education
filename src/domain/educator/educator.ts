@@ -66,7 +66,9 @@ export class Educator extends Entity {
   }
 
   public add(pacient: Pacient): void {
-    const added = this.pacients.filter((p) => p.Id == pacient.Id).length != 0;
+    const added =
+      this.pacients.filter((p) => p.Id == pacient.Id || p.CPF == pacient.CPF)
+        .length != 0;
     if (!added) this.pacients.push(pacient);
   }
 }
